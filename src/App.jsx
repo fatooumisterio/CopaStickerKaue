@@ -324,12 +324,24 @@ export default function App() {
     }
   };
 
+  // If user is not authenticated, render Login Screen
   if (!user && !showSplash) {
     return <Login onLoginSuccess={(u) => setUser(u)} />;
   }
 
+  // Se o usuário está logado, mas o Firebase ainda não terminou de buscar os dados
+  if (user && !dataLoaded && !showSplash) {
+    return (
+      <div className="mobile-container" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+        <div className="animate-pulse-gold" style={{ color: 'var(--color-orange)', fontWeight: 800 }}>
+          Carregando perfil...
+        </div>
+      </div>
+    );
+  }
+
   // If user is authenticated but hasn't picked a country yet
-  if (user && !userCountry && !showSplash) {
+  if (user && !userCountry && dataLoaded && !showSplash) {
     return <CountrySelector onSelect={(code) => setUserCountry(code)} />;
   }
 

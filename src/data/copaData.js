@@ -1,81 +1,81 @@
 // Copa do Mundo 2026 - Banco de Dados de Figurinhas Oficial Panini (48 Seleções)
 
 export const groups = {
-  A: { name: 'Grupo A', teams: ['MEX', 'CRC', 'MAR', 'JPN'] },
-  B: { name: 'Grupo B', teams: ['CAN', 'URU', 'POL', 'KOR'] },
-  C: { name: 'Grupo C', teams: ['BRA', 'DEN', 'ALG', 'KSA'] },
-  D: { name: 'Grupo D', teams: ['USA', 'SWE', 'EGY', 'IRN'] },
-  E: { name: 'Grupo E', teams: ['FRA', 'COL', 'TUN', 'IRQ'] },
-  F: { name: 'Grupo F', teams: ['GER', 'PER', 'NGA', 'QAT'] },
-  G: { name: 'Grupo G', teams: ['ESP', 'CHI', 'CMR', 'UZB'] },
-  H: { name: 'Grupo H', teams: ['POR', 'SUI', 'GHA', 'JAM'] },
-  I: { name: 'Grupo I', teams: ['ITA', 'PAR', 'MLI', 'OMA'] },
-  J: { name: 'Grupo J', teams: ['ENG', 'UKR', 'CIV', 'UAE'] },
-  K: { name: 'Grupo K', teams: ['BEL', 'CRO', 'RSA', 'NZL'] },
-  L: { name: 'Grupo L', teams: ['ARG', 'NED', 'SEN', 'AUS'] },
+  A: { name: 'Grupo A', teams: ['MEX', 'RSA', 'KOR', 'CZE'] },
+  B: { name: 'Grupo B', teams: ['CAN', 'BIH', 'QAT', 'SUI'] },
+  C: { name: 'Grupo C', teams: ['BRA', 'MAR', 'HAI', 'SCO'] },
+  D: { name: 'Grupo D', teams: ['USA', 'PAR', 'AUS', 'TUR'] },
+  E: { name: 'Grupo E', teams: ['GER', 'CUW', 'CIV', 'ECU'] },
+  F: { name: 'Grupo F', teams: ['NED', 'JPN', 'SWE', 'TUN'] },
+  G: { name: 'Grupo G', teams: ['BEL', 'EGY', 'IRN', 'NZL'] },
+  H: { name: 'Grupo H', teams: ['ESP', 'CPV', 'KSA', 'URU'] },
+  I: { name: 'Grupo I', teams: ['FRA', 'SEN', 'IRQ', 'NOR'] },
+  J: { name: 'Grupo J', teams: ['ARG', 'ALG', 'AUT', 'JOR'] },
+  K: { name: 'Grupo K', teams: ['POR', 'COD', 'UZB', 'COL'] },
+  L: { name: 'Grupo L', teams: ['ENG', 'CRO', 'GHA', 'PAN'] },
   X: { name: 'Páginas Especiais', teams: ['HIST', 'COCA'] }
 };
 
 export const teams = {
   MEX: { name: 'México', flag: '🇲🇽', color: '#006847' },
-  CRC: { name: 'Costa Rica', flag: '🇨🇷', color: '#1155cc' },
-  MAR: { name: 'Marrocos', flag: '🇲🇦', color: '#c1272d' },
-  JPN: { name: 'Japão', flag: '🇯🇵', color: '#002f6c' },
-  
-  CAN: { name: 'Canadá', flag: '🇨🇦', color: '#ff0000' },
-  URU: { name: 'Uruguai', flag: '🇺🇾', color: '#00a3e0' },
-  POL: { name: 'Polônia', flag: '🇵🇱', color: '#dc143c' },
-  KOR: { name: 'Coreia do Sul', flag: '🇰🇷', color: '#0a1172' },
-  
-  BRA: { name: 'Brasil', flag: '🇧🇷', color: '#009739' },
-  DEN: { name: 'Dinamarca', flag: '🇩🇰', color: '#c8102e' },
-  ALG: { name: 'Argélia', flag: '🇩🇿', color: '#006633' },
-  KSA: { name: 'Arábia Saudita', flag: '🇸🇦', color: '#006c35' },
-  
-  USA: { name: 'Estados Unidos', flag: '🇺🇸', color: '#002868' },
-  SWE: { name: 'Suécia', flag: '🇸🇪', color: '#006aa7' },
-  EGY: { name: 'Egito', flag: '🇪🇬', color: '#c8102e' },
-  IRN: { name: 'Irã', flag: '🇮🇷', color: '#239f40' },
-  
-  FRA: { name: 'França', flag: '🇫🇷', color: '#002395' },
-  COL: { name: 'Colômbia', flag: '🇨🇴', color: '#fcd116' },
-  TUN: { name: 'Tunísia', flag: '🇹🇳', color: '#e10600' },
-  IRQ: { name: 'Iraque', flag: '🇮🇶', color: '#007a3d' },
-  
-  GER: { name: 'Alemanha', flag: '🇩🇪', color: '#000000' },
-  PER: { name: 'Peru', flag: '🇵🇪', color: '#d91414' },
-  NGA: { name: 'Nigéria', flag: '🇳🇬', color: '#008751' },
-  QAT: { name: 'Catar', flag: '🇶🇦', color: '#8a1538' },
-  
-  ESP: { name: 'Espanha', flag: '🇪🇸', color: '#c11b17' },
-  CHI: { name: 'Chile', flag: '🇨🇱', color: '#0039a6' },
-  CMR: { name: 'Camarões', flag: '🇨🇲', color: '#007a5e' },
-  UZB: { name: 'Uzbequistão', flag: '🇺🇿', color: '#0099b5' },
-  
-  POR: { name: 'Portugal', flag: '🇵🇹', color: '#046a38' },
-  SUI: { name: 'Suíça', flag: '🇨🇭', color: '#d52b1e' },
-  GHA: { name: 'Gana', flag: '🇬🇭', color: '#da291c' },
-  JAM: { name: 'Jamaica', flag: '🇯🇲', color: '#009b3a' },
-  
-  ITA: { name: 'Itália', flag: '🇮🇹', color: '#0064aa' },
-  PAR: { name: 'Paraguai', flag: '🇵🇾', color: '#d52b1e' },
-  MLI: { name: 'Mali', flag: '🇲🇱', color: '#14b53a' },
-  OMA: { name: 'Omã', flag: '🇴🇲', color: '#d01c1f' },
-  
-  ENG: { name: 'Inglaterra', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: '#cf081f' },
-  UKR: { name: 'Ucrânia', flag: '🇺🇦', color: '#ffd700' },
-  CIV: { name: 'Costa do Marfim', flag: '🇨🇮', color: '#ff8200' },
-  UAE: { name: 'Emirados Árabes', flag: '🇦🇪', color: '#00732f' },
-  
-  BEL: { name: 'Bélgica', flag: '🇧🇪', color: '#e52b50' },
-  CRO: { name: 'Croácia', flag: '🇭🇷', color: '#ff0000' },
-  RSA: { name: 'África do Sul', flag: '🇿🇦', color: '#007c59' },
-  NZL: { name: 'Nova Zelândia', flag: '🇳🇿', color: '#000000' },
+  RSA: { name: 'África do Sul', flag: '🇿🇦', color: '#007749' },
+  KOR: { name: 'Coreia do Sul', flag: '🇰🇷', color: '#C60C30' },
+  CZE: { name: 'Tchéquia', flag: '🇨🇿', color: '#11457E' },
 
-  ARG: { name: 'Argentina', flag: '🇦🇷', color: '#74acdf' },
-  NED: { name: 'Holanda', flag: '🇳🇱', color: '#f36c21' },
-  SEN: { name: 'Senegal', flag: '🇸🇳', color: '#00a859' },
-  AUS: { name: 'Austrália', flag: '🇦🇺', color: '#00008b' },
+  CAN: { name: 'Canadá', flag: '🇨🇦', color: '#FF0000' },
+  BIH: { name: 'Bósnia e Herzegovina', flag: '🇧🇦', color: '#002395' },
+  QAT: { name: 'Catar', flag: '🇶🇦', color: '#8A1538' },
+  SUI: { name: 'Suíça', flag: '🇨🇭', color: '#FF0000' },
+
+  BRA: { name: 'Brasil', flag: '🇧🇷', color: '#009739' },
+  MAR: { name: 'Marrocos', flag: '🇲🇦', color: '#C1272D' },
+  HAI: { name: 'Haiti', flag: '🇭🇹', color: '#00209F' },
+  SCO: { name: 'Escócia', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿', color: '#0065BF' },
+
+  USA: { name: 'Estados Unidos', flag: '🇺🇸', color: '#B31942' },
+  PAR: { name: 'Paraguai', flag: '🇵🇾', color: '#D52B1E' },
+  AUS: { name: 'Austrália', flag: '🇦🇺', color: '#00008B' },
+  TUR: { name: 'Turquia', flag: '🇹🇷', color: '#E30A17' },
+
+  GER: { name: 'Alemanha', flag: '🇩🇪', color: '#DD0000' },
+  CUW: { name: 'Curaçao', flag: '🇨🇼', color: '#002B7F' },
+  CIV: { name: 'Costa do Marfim', flag: '🇨🇮', color: '#F77F00' },
+  ECU: { name: 'Equador', flag: '🇪🇨', color: '#FFDD00' },
+
+  NED: { name: 'Holanda', flag: '🇳🇱', color: '#F36C21' },
+  JPN: { name: 'Japão', flag: '🇯🇵', color: '#000555' },
+  SWE: { name: 'Suécia', flag: '🇸🇪', color: '#FECC00' },
+  TUN: { name: 'Tunísia', flag: '🇹🇳', color: '#E70013' },
+
+  BEL: { name: 'Bélgica', flag: '🇧🇪', color: '#E30613' },
+  EGY: { name: 'Egito', flag: '🇪🇬', color: '#CE1126' },
+  IRN: { name: 'Irã', flag: '🇮🇷', color: '#239F40' },
+  NZL: { name: 'Nova Zelândia', flag: '🇳🇿', color: '#C0C0C0' },
+
+  ESP: { name: 'Espanha', flag: '🇪🇸', color: '#AA151B' },
+  CPV: { name: 'Cabo Verde', flag: '🇨🇻', color: '#003893' },
+  KSA: { name: 'Arábia Saudita', flag: '🇸🇦', color: '#006C35' },
+  URU: { name: 'Uruguai', flag: '🇺🇾', color: '#0038A8' },
+
+  FRA: { name: 'França', flag: '🇫🇷', color: '#002395' },
+  SEN: { name: 'Senegal', flag: '🇸🇳', color: '#00853F' },
+  IRQ: { name: 'Iraque', flag: '🇮🇶', color: '#CE1126' },
+  NOR: { name: 'Noruega', flag: '🇳🇴', color: '#BA0C2F' },
+
+  ARG: { name: 'Argentina', flag: '🇦🇷', color: '#43A1D5' },
+  ALG: { name: 'Argélia', flag: '🇩🇿', color: '#006233' },
+  AUT: { name: 'Áustria', flag: '🇦🇹', color: '#ED2939' },
+  JOR: { name: 'Jordânia', flag: '🇯🇴', color: '#CE1126' },
+
+  POR: { name: 'Portugal', flag: '🇵🇹', color: '#FF0000' },
+  COD: { name: 'RD Congo', flag: '🇨🇩', color: '#007EE5' },
+  UZB: { name: 'Uzbequistão', flag: '🇺🇿', color: '#0099B5' },
+  COL: { name: 'Colômbia', flag: '🇨🇴', color: '#FCD116' },
+
+  ENG: { name: 'Inglaterra', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: '#CF0820' },
+  CRO: { name: 'Croácia', flag: '🇭🇷', color: '#FF0000' },
+  GHA: { name: 'Gana', flag: '🇬🇭', color: '#006B3F' },
+  PAN: { name: 'Panamá', flag: '🇵🇦', color: '#C8102E' },
 
   HIST: { name: 'Campeões Históricos (FIFA Museum)', flag: '🏛️', color: '#D4AF37' },
   COCA: { name: 'Team Believers (Coca-Cola)', flag: '🥤', color: '#F40009' }

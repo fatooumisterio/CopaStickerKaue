@@ -121,7 +121,7 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onL
           </div>
           <h1 style={{ marginTop: '4px', lineHeight: '0.95', display: 'flex', flexDirection: 'column', width: 'fit-content' }}>
             <span className="neon-text-2026" style={{ fontSize: '32px', letterSpacing: '-0.03em' }}>WORLD CUP</span>
-            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#000000', fontWeight: 950, fontSize: '64px', lineHeight: '0.85', marginTop: '2px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', color: '#ffffff', fontWeight: 950, fontSize: '64px', lineHeight: '0.85', marginTop: '2px' }}>
               <span>2</span>
               <span>0</span>
               <span>2</span>
