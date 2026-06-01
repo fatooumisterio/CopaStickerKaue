@@ -7,6 +7,7 @@ import StickerScanner from './components/StickerScanner';
 import TradeManager from './components/TradeManager';
 import FriendsPage from './components/FriendsPage';
 import Login from './components/Login';
+import SplashScreen from './components/SplashScreen';
 import { TOTAL_STICKERS } from './data/copaData';
 import { db } from './services/firebase';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
@@ -15,6 +16,14 @@ export default function App() {
   const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'album' | 'trades'
   const [selectedTeam, setSelectedTeam] = useState(null); // Code of the selected team (e.g., 'BRA')
   const [showScanner, setShowScanner] = useState(false);
+  const [showSplash, setShowSplash] = useState(() => {
+    return !sessionStorage.getItem('splash_shown');
+  });
+
+  const handleSplashComplete = () => {
+    sessionStorage.setItem('splash_shown', 'true');
+    setShowSplash(false);
+  };
 
   // Authentication State
   const [user, setUser] = useState(() => {
@@ -198,14 +207,17 @@ export default function App() {
   };
 
   // If user is not authenticated, render Login Screen
-  if (!user) {
+  if (!user && !showSplash) {
     return <Login onLoginSuccess={(u) => setUser(u)} />;
   }
 
   return (
-    <div className="mobile-container">
-      
-      {/* Scrollable Main Area */}
+    <>
+      {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
+      {!showSplash && (
+        <div className="mobile-container">
+          
+          {/* Scrollable Main Area */}
       <div className="content-area">
         {renderContent()}
       </div>
@@ -263,6 +275,8 @@ export default function App() {
         />
       )}
 
-    </div>
+        </div>
+      )}
+    </>
   );
 }
