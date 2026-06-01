@@ -122,7 +122,6 @@ export default function Login({ onLoginSuccess }) {
               <Loader2 size={24} className="animate-spin" style={{ color: 'var(--color-orange)', animation: 'spin 1s linear infinite' }} />
               <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)' }}>
                 {loading === 'google' && 'Conectando ao Google...'}
-                {loading === 'apple' && 'Conectando ao ID Apple...'}
                 {loading === 'guest' && 'Iniciando painel...'}
               </span>
             </div>
@@ -159,34 +158,6 @@ export default function Login({ onLoginSuccess }) {
                 Entrar com Google
               </button>
 
-              {/* Apple Button */}
-              <button
-                onClick={() => handleRealLogin('apple')}
-                className="glass-interactive"
-                style={{
-                  width: '100%',
-                  height: '52px',
-                  border: 'none',
-                  borderRadius: '12px',
-                  background: '#000000',
-                  color: '#ffffff',
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '12px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
-                }}
-              >
-                {/* Apple White Icon */}
-                <svg width="16" height="18" viewBox="0 0 16 18" fill="none">
-                  <path d="M13.626 9.176c.026 2.058 1.802 2.748 1.828 2.762-.016.052-.284.97-1.008 1.954-.626.852-1.272 1.698-2.296 1.716-1.004.016-1.327-.55-2.47-.55-1.144 0-1.503.534-2.454.568-.985.034-1.716-.918-2.348-1.78C3.593 12.062 2.3 8.358 3.633 6.208c.662-1.07 1.84-1.748 3.102-1.766 1.004-.016 1.95.632 2.564.632.616 0 1.763-.78 2.973-.664.506.018 1.93.188 2.846 1.442-.074.043-1.698.928-1.692 2.825l.2-.5z" fill="white" />
-                  <path d="M11.236 2.548c.51-.577.854-1.383.76-2.186-.738.028-1.632.463-2.16 1.042-.464.506-.87 1.327-.753 2.115.823.06 1.642-.395 2.153-.971z" fill="white" />
-                </svg>
-                Entrar com a Apple
-              </button>
 
               {/* Guest / Continue Offline Button */}
               <button
