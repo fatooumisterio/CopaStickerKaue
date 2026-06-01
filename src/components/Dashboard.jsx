@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Trophy, CheckCircle2, Circle, Copy, Share2, Sparkles } from 'lucide-react';
 import { TOTAL_STICKERS, teams } from '../data/copaData';
 
-export default function Dashboard({ stats, stickerStates, user, userCountry, onLogout, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
+export default function Dashboard({ stats, stickerStates, user, userCountry, onChangeCountry, onLogout, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
   const percentComplete = ((stats.pasted / TOTAL_STICKERS) * 100).toFixed(1);
   const numericPercent = parseFloat(percentComplete);
 
@@ -88,27 +88,46 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onL
             </div>
           </div>
           
-          <button 
-            onClick={onLogout}
-            style={{ 
-              border: '1px solid rgba(255, 255, 255, 0.1)', 
-              background: 'rgba(0, 0, 0, 0.3)', 
-              color: '#e03e1a', 
-              fontSize: '12px', 
-              fontWeight: 800, 
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              padding: '6px 10px',
-              borderRadius: '8px',
-              backdropFilter: 'blur(5px)',
-              position: 'relative',
-              zIndex: 1
-            }}
-          >
-            Sair
-          </button>
+          <div style={{ display: 'flex', gap: '8px', zIndex: 1, position: 'relative' }}>
+            <button 
+              onClick={onChangeCountry}
+              style={{ 
+                border: '1px solid rgba(255, 255, 255, 0.1)', 
+                background: 'rgba(0, 156, 180, 0.2)', 
+                color: '#fff', 
+                fontSize: '12px', 
+                fontWeight: 800, 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '6px 10px',
+                borderRadius: '8px',
+                backdropFilter: 'blur(5px)'
+              }}
+            >
+              Trocar País
+            </button>
+            <button 
+              onClick={onLogout}
+              style={{ 
+                border: '1px solid rgba(255, 255, 255, 0.1)', 
+                background: 'rgba(0, 0, 0, 0.3)', 
+                color: '#e03e1a', 
+                fontSize: '12px', 
+                fontWeight: 800, 
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                padding: '6px 10px',
+                borderRadius: '8px',
+                backdropFilter: 'blur(5px)'
+              }}
+            >
+              Sair
+            </button>
+          </div>
         </div>
       )}
 

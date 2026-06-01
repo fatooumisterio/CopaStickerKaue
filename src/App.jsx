@@ -288,6 +288,7 @@ export default function App() {
             stickerStates={stickerStates}
             user={user}
             userCountry={userCountry}
+            onChangeCountry={() => setUserCountry(null)}
             onLogout={() => setUser(null)}
             onSelectTeam={(teamCode) => setSelectedTeam(teamCode)}
             onNavigateToAlbum={() => setCurrentTab('album')}
@@ -317,6 +318,7 @@ export default function App() {
             stickerStates={stickerStates}
             user={user}
             userCountry={userCountry}
+            onChangeCountry={() => setUserCountry(null)}
             onLogout={() => setUser(null)}
             onSelectTeam={(teamCode) => setSelectedTeam(teamCode)}
           />
