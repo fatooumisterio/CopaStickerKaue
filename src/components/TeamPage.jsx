@@ -3,18 +3,18 @@ import { ArrowLeft, Plus, Minus, Check, Copy } from 'lucide-react';
 import { teams, getStickersForTeam } from '../data/copaData';
 
 const flagMap = {
-  USA: 'us', CRC: 'cr', MAR: 'ma', JPN: 'jp',
-  MEX: 'mx', ECU: 'ec', SEN: 'sn', AUS: 'au',
-  CAN: 'ca', URU: 'uy', POL: 'pl', KOR: 'kr',
-  ARG: 'ar', SWE: 'se', EGY: 'eg', IRN: 'ir',
-  BRA: 'br', DEN: 'dk', ALG: 'dz', KSA: 'sa',
-  FRA: 'fr', COL: 'co', TUN: 'tn', IRQ: 'iq',
-  GER: 'de', PER: 'pe', NGA: 'ng', QAT: 'qa',
-  ESP: 'es', CHI: 'cl', CMR: 'cm', UZB: 'uz',
-  POR: 'pt', SUI: 'ch', GHA: 'gh', JAM: 'jm',
-  ITA: 'it', PAR: 'py', MLI: 'ml', OMA: 'om',
-  ENG: 'gb-eng', UKR: 'ua', CIV: 'ci', UAE: 'ae',
-  BEL: 'be', CRO: 'hr', RSA: 'za', NZL: 'nz'
+  MEX: 'mx', RSA: 'za', KOR: 'kr', CZE: 'cz',
+  CAN: 'ca', BIH: 'ba', QAT: 'qa', SUI: 'ch',
+  BRA: 'br', MAR: 'ma', HAI: 'ht', SCO: 'gb-sct',
+  USA: 'us', PAR: 'py', AUS: 'au', TUR: 'tr',
+  GER: 'de', CUW: 'cw', CIV: 'ci', ECU: 'ec',
+  NED: 'nl', JPN: 'jp', SWE: 'se', TUN: 'tn',
+  BEL: 'be', EGY: 'eg', IRN: 'ir', NZL: 'nz',
+  ESP: 'es', CPV: 'cv', KSA: 'sa', URU: 'uy',
+  FRA: 'fr', SEN: 'sn', IRQ: 'iq', NOR: 'no',
+  ARG: 'ar', ALG: 'dz', AUT: 'at', JOR: 'jo',
+  POR: 'pt', COD: 'cd', UZB: 'uz', COL: 'co',
+  ENG: 'gb-eng', CRO: 'hr', GHA: 'gh', PAN: 'pa'
 };
 
 export default function TeamPage({ teamCode, stickerStates, onTogglePasted, onAdjustDuplicates, onBack }) {
@@ -173,23 +173,72 @@ export default function TeamPage({ teamCode, stickerStates, onTogglePasted, onAd
                 )}
               </div>
 
-              {/* Middle Row: Name & Role */}
-              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', margin: '4px 0' }}>
-                <h4 style={{
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  color: 'var(--text-primary)',
-                  lineHeight: '1.2'
-                }}>
-                  {sticker.name}
-                </h4>
-                <span style={{
-                  fontSize: '11px',
-                  color: 'var(--text-secondary)',
-                  marginTop: '2px'
-                }}>
-                  {sticker.role}
-                </span>
+              {/* Middle Row: Photo, Name & Role */}
+              <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: '6px 0', gap: '8px' }}>
+                {sticker.type === 'player' && (
+                  <div style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '50%',
+                    border: isPasted ? `2px solid ${team.color}` : '2px dashed var(--border-glass)',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: isPasted ? 'transparent' : 'rgba(0,0,0,0.1)',
+                    opacity: isPasted ? 1 : 0.4,
+                    filter: isPasted ? 'none' : 'grayscale(100%)',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <img 
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(sticker.name)}&background=random&color=fff&size=128&bold=true`} 
+                      alt={sticker.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
+                
+                {sticker.type === 'special' && (
+                   <div style={{
+                    width: '56px',
+                    height: '56px',
+                    borderRadius: '8px',
+                    border: isPasted ? `2px solid ${team.color}` : '2px dashed var(--border-glass)',
+                    overflow: 'hidden',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: isPasted ? 'transparent' : 'rgba(0,0,0,0.1)',
+                    opacity: isPasted ? 1 : 0.4,
+                    filter: isPasted ? 'none' : 'grayscale(100%)',
+                    transition: 'all 0.3s ease'
+                  }}>
+                    <img 
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(sticker.name)}&background=ffd700&color=000&size=128&bold=true`} 
+                      alt={sticker.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
+
+                <div style={{ textAlign: 'center' }}>
+                  <h4 style={{
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    color: 'var(--text-primary)',
+                    lineHeight: '1.2'
+                  }}>
+                    {sticker.name}
+                  </h4>
+                  <span style={{
+                    fontSize: '11px',
+                    color: 'var(--text-secondary)',
+                    marginTop: '2px',
+                    display: 'block'
+                  }}>
+                    {sticker.role}
+                  </span>
+                </div>
               </div>
 
               {/* Bottom Row: Actions */}
