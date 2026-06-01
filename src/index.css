@@ -107,6 +107,7 @@ h1, h2, h3, h4 {
   font-weight: 800;
   letter-spacing: -0.03em;
   color: var(--text-primary);
+  -webkit-text-stroke: var(--theme-stroke, 0px transparent);
 }
 
 .gold-text {
@@ -122,6 +123,7 @@ h1, h2, h3, h4 {
   -webkit-text-fill-color: transparent;
   font-weight: 900;
   letter-spacing: -0.04em;
+  -webkit-text-stroke: var(--theme-stroke, 0px transparent);
 }
 
 /* Animations */
@@ -204,6 +206,7 @@ h1, h2, h3, h4 {
 
 .tab-btn.active {
   color: var(--color-teal);
+  filter: var(--theme-icon-shadow, none);
 }
 
 .tab-btn.active::after {

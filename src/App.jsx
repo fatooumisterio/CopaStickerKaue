@@ -44,18 +44,57 @@ export default function App() {
   useEffect(() => {
     if (userCountry && teams[userCountry]) {
       localStorage.setItem('copa_user_country', userCountry);
-      const c = teams[userCountry].color;
+      const originalColor = teams[userCountry].color;
+      
+      // Helper para clarear cor e verificar se é muito escura
+      const processThemeColor = (hex) => {
+        let r = parseInt(hex.substring(1, 3), 16);
+        let g = parseInt(hex.substring(3, 5), 16);
+        let b = parseInt(hex.substring(5, 7), 16);
+        
+        // Brilho percebido
+        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+        
+        // Clarear a cor misturando 40% com branco para destacar no fundo escuro
+        const blendWhite = (val) => Math.round(val + (255 - val) * 0.4);
+        const lr = blendWhite(r);
+        const lg = blendWhite(g);
+        const lb = blendWhite(b);
+        
+        const toHex = (x) => {
+          const h = x.toString(16);
+          return h.length === 1 ? '0' + h : h;
+        };
+        
+        const lightenedHex = `#${toHex(lr)}${toHex(lg)}${toHex(lb)}`;
+        
+        return { 
+          color: lightenedHex, 
+          isDark: brightness < 80 
+        };
+      };
+
+      const { color: lightColor, isDark } = processThemeColor(originalColor);
       const root = document.documentElement;
       
-      // Override main theme colors with the country's primary color
-      root.style.setProperty('--color-teal', c);
-      root.style.setProperty('--color-orange', c);
-      root.style.setProperty('--color-blue', c);
+      // Override main theme colors with the lightened country color
+      root.style.setProperty('--color-teal', lightColor);
+      root.style.setProperty('--color-orange', lightColor);
+      root.style.setProperty('--color-blue', lightColor);
       
-      // Create a nice gradient using the country color and a darker shade or white
-      root.style.setProperty('--accent-2026-gradient', `linear-gradient(135deg, ${c} 0%, rgba(255,255,255,0.2) 100%)`);
-      root.style.setProperty('--glow-teal', `0 4px 15px ${c}40`);
-      root.style.setProperty('--glow-orange', `0 4px 15px ${c}40`);
+      // Create a nice gradient
+      root.style.setProperty('--accent-2026-gradient', `linear-gradient(135deg, ${lightColor} 0%, rgba(255,255,255,0.4) 100%)`);
+      root.style.setProperty('--glow-teal', `0 4px 15px ${lightColor}60`);
+      root.style.setProperty('--glow-orange', `0 4px 15px ${lightColor}60`);
+
+      // Se a cor for muito escura (preto ou próximo), adicionar contorno branco
+      if (isDark) {
+        root.style.setProperty('--theme-stroke', '1px rgba(255,255,255,0.8)');
+        root.style.setProperty('--theme-icon-shadow', 'drop-shadow(0 0 2px rgba(255,255,255,0.9))');
+      } else {
+        root.style.setProperty('--theme-stroke', '0px transparent');
+        root.style.setProperty('--theme-icon-shadow', 'none');
+      }
     }
   }, [userCountry]);
 
