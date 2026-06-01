@@ -2,7 +2,7 @@ import React from 'react';
 import { Trophy, CheckCircle2, Circle, Copy, Share2, Sparkles } from 'lucide-react';
 import { TOTAL_STICKERS, teams } from '../data/copaData';
 
-export default function Dashboard({ stats, stickerStates, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
+export default function Dashboard({ stats, stickerStates, user, onLogout, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
   const percentComplete = ((stats.pasted / TOTAL_STICKERS) * 100).toFixed(1);
   const numericPercent = parseFloat(percentComplete);
 
@@ -29,6 +29,76 @@ export default function Dashboard({ stats, stickerStates, onSelectTeam, onNaviga
 
   return (
     <div className="dashboard-container" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+
+      {/* User Profile Welcome Row */}
+      {user && (
+        <div className="glass" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'space-between', 
+          padding: '12px 16px', 
+          borderRadius: '14px', 
+          border: '1px solid rgba(255, 90, 0, 0.15)',
+          background: 'rgba(255, 255, 255, 0.95)',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.03)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {user.avatar.length > 2 ? (
+              <img 
+                src={user.avatar} 
+                alt={user.name} 
+                style={{ 
+                  width: '34px', 
+                  height: '34px', 
+                  borderRadius: '50%', 
+                  objectFit: 'cover', 
+                  border: '2px solid var(--color-orange)' 
+                }} 
+              />
+            ) : (
+              <div style={{ 
+                width: '34px', 
+                height: '34px', 
+                borderRadius: '50%', 
+                background: 'rgba(0, 156, 180, 0.1)', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center', 
+                fontSize: '18px',
+                border: '1px solid var(--border-glass)'
+              }}>
+                {user.avatar}
+              </div>
+            )}
+            <div>
+              <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 800 }}>Olá, {user.name}!</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
+                {user.provider === 'google' ? 'Google Account' : user.provider === 'apple' ? 'ID Apple' : 'Convidado'}
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            onClick={onLogout}
+            style={{ 
+              border: 'none', 
+              background: 'none', 
+              color: '#e03e1a', 
+              fontSize: '12px', 
+              fontWeight: 800, 
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              padding: '6px 10px',
+              borderRadius: '8px',
+              background: 'rgba(255, 90, 0, 0.05)'
+            }}
+          >
+            Sair
+          </button>
+        </div>
+      )}
 
       {/* Premium Header with Official 2026 Logo */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: '5px' }}>

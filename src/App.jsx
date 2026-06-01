@@ -5,6 +5,7 @@ import AlbumView from './components/AlbumView';
 import TeamPage from './components/TeamPage';
 import StickerScanner from './components/StickerScanner';
 import TradeManager from './components/TradeManager';
+import Login from './components/Login';
 import { TOTAL_STICKERS } from './data/copaData';
 
 export default function App() {
@@ -12,16 +13,31 @@ export default function App() {
   const [selectedTeam, setSelectedTeam] = useState(null); // Code of the selected team (e.g., 'BRA')
   const [showScanner, setShowScanner] = useState(false);
 
+  // Authentication State
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('copa_user');
+    return saved ? JSON.parse(saved) : null;
+  });
+
   // Sticker state structured as: { "BRA_10": { status: 'pasted' | 'missing', duplicates: 0 } }
   const [stickerStates, setStickerStates] = useState(() => {
     const saved = localStorage.getItem('copa_sticker_states');
     return saved ? JSON.parse(saved) : {};
   });
 
-  // Sync to localStorage
+  // Sync stickerStates to localStorage
   useEffect(() => {
     localStorage.setItem('copa_sticker_states', JSON.stringify(stickerStates));
   }, [stickerStates]);
+
+  // Sync user authentication to localStorage
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('copa_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('copa_user');
+    }
+  }, [user]);
 
   // Aggregate stats helper
   const getStats = () => {
@@ -100,6 +116,8 @@ export default function App() {
           <Dashboard
             stats={stats}
             stickerStates={stickerStates}
+            user={user}
+            onLogout={() => setUser(null)}
             onSelectTeam={(teamCode) => setSelectedTeam(teamCode)}
             onNavigateToAlbum={() => setCurrentTab('album')}
             onNavigateToTrades={() => setCurrentTab('trades')}
@@ -124,11 +142,18 @@ export default function App() {
           <Dashboard
             stats={stats}
             stickerStates={stickerStates}
+            user={user}
+            onLogout={() => setUser(null)}
             onSelectTeam={(teamCode) => setSelectedTeam(teamCode)}
           />
         );
     }
   };
+
+  // If user is not authenticated, render Login Screen
+  if (!user) {
+    return <Login onLoginSuccess={(u) => setUser(u)} />;
+  }
 
   return (
     <div className="mobile-container">
