@@ -1,47 +1,35 @@
 import React, { useState } from 'react';
 import { Sparkles, ArrowRight, Loader2, LogIn } from 'lucide-react';
+import { loginWithGoogle, loginWithApple } from '../services/firebase';
 
 export default function Login({ onLoginSuccess }) {
   const [loading, setLoading] = useState(null); // null | 'google' | 'apple' | 'guest'
 
-  const handleSimulateLogin = (provider) => {
+  const handleRealLogin = async (provider) => {
     setLoading(provider);
-    
-    // Simular o tempo de resposta do SDK de autenticação
-    setTimeout(() => {
-      let mockUser = {
-        name: 'Colecionador de Elite',
-        email: 'colecionador@copa2026.com',
-        provider: provider,
-        avatar: '🏆'
-      };
-
+    try {
+      let loggedUser = null;
       if (provider === 'google') {
-        mockUser = {
-          name: 'Kaue Silva',
-          email: 'kaue.silva@gmail.com',
-          provider: 'google',
-          avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80'
-        };
+        loggedUser = await loginWithGoogle();
       } else if (provider === 'apple') {
-        mockUser = {
-          name: 'Kaue Apple',
-          email: 'kaue@icloud.com',
-          provider: 'apple',
-          avatar: '🍏'
-        };
+        loggedUser = await loginWithApple();
       } else {
-        mockUser = {
+        // Simular um breve carregamento para o Convidado
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        loggedUser = {
           name: 'Convidado',
           email: 'guest@copa2026.com',
           provider: 'guest',
           avatar: '👤'
         };
       }
-
+      onLoginSuccess(loggedUser);
+    } catch (error) {
+      console.error("Erro na autenticação:", error);
+      alert("Falha na autenticação. Verifique sua conexão e tente novamente.");
+    } finally {
       setLoading(null);
-      onLoginSuccess(mockUser);
-    }, 1800);
+    }
   };
 
   return (
@@ -142,7 +130,7 @@ export default function Login({ onLoginSuccess }) {
             <>
               {/* Google Button */}
               <button
-                onClick={() => handleSimulateLogin('google')}
+                onClick={() => handleRealLogin('google')}
                 className="glass-interactive"
                 style={{
                   width: '100%',
@@ -173,7 +161,7 @@ export default function Login({ onLoginSuccess }) {
 
               {/* Apple Button */}
               <button
-                onClick={() => handleSimulateLogin('apple')}
+                onClick={() => handleRealLogin('apple')}
                 className="glass-interactive"
                 style={{
                   width: '100%',
@@ -202,7 +190,7 @@ export default function Login({ onLoginSuccess }) {
 
               {/* Guest / Continue Offline Button */}
               <button
-                onClick={() => handleSimulateLogin('guest')}
+                onClick={() => handleRealLogin('guest')}
                 className="glass-interactive"
                 style={{
                   width: '100%',
