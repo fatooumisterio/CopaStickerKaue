@@ -2,9 +2,25 @@ import React from 'react';
 import { ArrowLeft, Plus, Minus, Check, Copy } from 'lucide-react';
 import { teams, getStickersForTeam } from '../data/copaData';
 
+const flagMap = {
+  USA: 'us', CRC: 'cr', MAR: 'ma', JPN: 'jp',
+  MEX: 'mx', ECU: 'ec', SEN: 'sn', AUS: 'au',
+  CAN: 'ca', URU: 'uy', POL: 'pl', KOR: 'kr',
+  ARG: 'ar', SWE: 'se', EGY: 'eg', IRN: 'ir',
+  BRA: 'br', DEN: 'dk', ALG: 'dz', KSA: 'sa',
+  FRA: 'fr', COL: 'co', TUN: 'tn', IRQ: 'iq',
+  GER: 'de', PER: 'pe', NGA: 'ng', QAT: 'qa',
+  ESP: 'es', CHI: 'cl', CMR: 'cm', UZB: 'uz',
+  POR: 'pt', SUI: 'ch', GHA: 'gh', JAM: 'jm',
+  ITA: 'it', PAR: 'py', MLI: 'ml', OMA: 'om',
+  ENG: 'gb-eng', UKR: 'ua', CIV: 'ci', UAE: 'ae',
+  BEL: 'be', CRO: 'hr', RSA: 'za', NZL: 'nz'
+};
+
 export default function TeamPage({ teamCode, stickerStates, onTogglePasted, onAdjustDuplicates, onBack }) {
   const team = teams[teamCode];
   const stickers = getStickersForTeam(teamCode);
+  const countryCode = flagMap[teamCode] || 'br';
 
   const getStickerProgress = () => {
     let pasted = 0;
@@ -19,9 +35,27 @@ export default function TeamPage({ teamCode, stickerStates, onTogglePasted, onAd
   const pastedCount = getStickerProgress();
 
   return (
-    <div className="team-page-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="team-page-container" style={{ display: 'flex', flexDirection: 'column', gap: '16px', position: 'relative' }}>
+      
+      {/* Background Flag Overlay */}
+      <div style={{
+        position: 'absolute',
+        top: '-24px', /* Compensate for content-area padding */
+        left: '-20px',
+        right: '-20px',
+        height: '380px',
+        backgroundImage: `url(https://flagcdn.com/w1280/${countryCode}.png)`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        opacity: 0.15,
+        maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)',
+        WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%)',
+        zIndex: 0,
+        pointerEvents: 'none'
+      }}></div>
+
       {/* Header Navigation */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', position: 'relative', zIndex: 1 }}>
         <button
           onClick={onBack}
           className="glass glass-interactive"
