@@ -2,22 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Trophy, CheckCircle2, Circle, Copy, Share2, Sparkles } from 'lucide-react';
 import { TOTAL_STICKERS, teams } from '../data/copaData';
 
-export default function Dashboard({ stats, stickerStates, user, onLogout, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
-  const [userCountry, setUserCountry] = useState(null);
-
-  useEffect(() => {
-    if (user) {
-      fetch('https://api.country.is/')
-        .then(res => res.json())
-        .then(data => {
-          if (data && data.country) {
-            setUserCountry(data.country.toLowerCase());
-          }
-        })
-        .catch(err => console.error("Erro ao buscar região do IP:", err));
-    }
-  }, [user]);
-
+export default function Dashboard({ stats, stickerStates, user, userCountry, onLogout, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
   const percentComplete = ((stats.pasted / TOTAL_STICKERS) * 100).toFixed(1);
   const numericPercent = parseFloat(percentComplete);
 
@@ -55,9 +40,6 @@ export default function Dashboard({ stats, stickerStates, user, onLogout, onSele
           borderRadius: '14px', 
           border: '1px solid rgba(255, 90, 0, 0.15)',
           background: 'var(--bg-secondary)',
-          backgroundImage: userCountry ? `linear-gradient(to right, rgba(10, 10, 12, 0.8) 0%, rgba(10, 10, 12, 0.6) 50%, rgba(10, 10, 12, 0) 100%), url(https://flagcdn.com/w320/${userCountry}.png)` : 'none',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center right',
           boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
           position: 'relative',
           overflow: 'hidden'
@@ -94,7 +76,12 @@ export default function Dashboard({ stats, stickerStates, user, onLogout, onSele
               </div>
             )}
             <div>
-              <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 800 }}>Olá, {user.name}!</div>
+              <div style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                Olá, {user.name}! 
+                {userCountry && teams[userCountry] && (
+                  <span style={{ fontSize: '16px' }}>{teams[userCountry].flag}</span>
+                )}
+              </div>
               <div style={{ fontSize: '10px', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
                 {user.provider === 'google' ? 'Google Account' : user.provider === 'apple' ? 'ID Apple' : 'Convidado'}
               </div>

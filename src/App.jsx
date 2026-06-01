@@ -8,8 +8,10 @@ import TradeManager from './components/TradeManager';
 import FriendsPage from './components/FriendsPage';
 import Login from './components/Login';
 import SplashScreen from './components/SplashScreen';
-import { TOTAL_STICKERS } from './data/copaData';
-import { db } from './services/firebase';
+import CountrySelector from './components/CountrySelector';
+import { TOTAL_STICKERS, teams } from './data/copaData';
+import { auth, db } from './services/firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function App() {
@@ -19,6 +21,8 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(() => {
     return !sessionStorage.getItem('splash_shown');
   });
+
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const handleSplashComplete = () => {
     sessionStorage.setItem('splash_shown', 'true');
@@ -30,6 +34,30 @@ export default function App() {
     const saved = localStorage.getItem('copa_user');
     return saved ? JSON.parse(saved) : null;
   });
+
+  // User Country Preference
+  const [userCountry, setUserCountry] = useState(() => {
+    return localStorage.getItem('copa_user_country') || null;
+  });
+
+  // Dynamic CSS Theming based on selected country
+  useEffect(() => {
+    if (userCountry && teams[userCountry]) {
+      localStorage.setItem('copa_user_country', userCountry);
+      const c = teams[userCountry].color;
+      const root = document.documentElement;
+      
+      // Override main theme colors with the country's primary color
+      root.style.setProperty('--color-teal', c);
+      root.style.setProperty('--color-orange', c);
+      root.style.setProperty('--color-blue', c);
+      
+      // Create a nice gradient using the country color and a darker shade or white
+      root.style.setProperty('--accent-2026-gradient', `linear-gradient(135deg, ${c} 0%, rgba(255,255,255,0.2) 100%)`);
+      root.style.setProperty('--glow-teal', `0 4px 15px ${c}40`);
+      root.style.setProperty('--glow-orange', `0 4px 15px ${c}40`);
+    }
+  }, [userCountry]);
 
   // Sticker state structured as: { "BRA_10": { status: 'pasted' | 'missing', duplicates: 0 } }
   const [stickerStates, setStickerStates] = useState(() => {
@@ -48,24 +76,57 @@ export default function App() {
       localStorage.setItem('copa_user', JSON.stringify(user));
     } else {
       localStorage.removeItem('copa_user');
+      localStorage.removeItem('copa_user_country');
+      setUserCountry(null);
+      setDataLoaded(false); // Reset on logout
     }
   }, [user]);
+
+  // Recover Firebase Auth Session
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(prev => {
+          if (prev && prev.email === firebaseUser.email) return prev;
+          return {
+            name: firebaseUser.displayName || "Usuário",
+            email: firebaseUser.email,
+            provider: firebaseUser.providerData[0]?.providerId.includes('apple') ? 'apple' : 'google',
+            avatar: firebaseUser.photoURL || "👤"
+          };
+        });
+      }
+    });
+    return () => unsubscribe();
+  }, []);
 
   // Firestore: Fetch data when user logs in
   useEffect(() => {
     async function fetchUserData() {
-      if (user && user.provider !== 'guest' && user.email) {
-        try {
-          const docRef = doc(db, 'users', user.email.toLowerCase());
-          const docSnap = await getDoc(docRef);
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            if (data.stickers) {
-              setStickerStates(data.stickers);
+      if (user) {
+        if (user.provider === 'guest') {
+          setDataLoaded(true);
+          return;
+        }
+        
+        if (user.email) {
+          try {
+            const docRef = doc(db, 'users', user.email.toLowerCase());
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists()) {
+              const data = docSnap.data();
+              if (data.stickers) {
+                setStickerStates(data.stickers);
+              }
+              if (data.country) {
+                setUserCountry(data.country);
+              }
             }
+          } catch (error) {
+            console.error("Erro ao buscar dados do usuário:", error);
+          } finally {
+            setDataLoaded(true);
           }
-        } catch (error) {
-          console.error("Erro ao buscar dados do usuário:", error);
         }
       }
     }
@@ -74,6 +135,8 @@ export default function App() {
 
   // Firestore: Save data when stickerStates changes (debounced to avoid too many writes)
   useEffect(() => {
+    if (!dataLoaded) return; // Prevent overwriting Firestore with local empty state before fetching!
+
     const timer = setTimeout(async () => {
       if (user && user.provider !== 'guest' && user.email) {
         try {
@@ -83,6 +146,7 @@ export default function App() {
             name: user.name,
             avatar: user.avatar,
             stickers: stickerStates,
+            country: userCountry,
             updatedAt: serverTimestamp()
           }, { merge: true });
         } catch (error) {
@@ -113,6 +177,19 @@ export default function App() {
     setStickerStates((prev) => {
       const current = prev[stickerKey] || { status: 'missing', duplicates: 0 };
       const newStatus = current.status === 'pasted' ? 'missing' : 'pasted';
+      return {
+        ...prev,
+        [stickerKey]: {
+          ...current,
+          status: newStatus
+        }
+      };
+    });
+  };
+
+  const handleSetStickerStatus = (stickerKey, newStatus) => {
+    setStickerStates((prev) => {
+      const current = prev[stickerKey] || { status: 'missing', duplicates: 0 };
       return {
         ...prev,
         [stickerKey]: {
@@ -171,6 +248,7 @@ export default function App() {
             stats={stats}
             stickerStates={stickerStates}
             user={user}
+            userCountry={userCountry}
             onLogout={() => setUser(null)}
             onSelectTeam={(teamCode) => setSelectedTeam(teamCode)}
             onNavigateToAlbum={() => setCurrentTab('album')}
@@ -199,6 +277,7 @@ export default function App() {
             stats={stats}
             stickerStates={stickerStates}
             user={user}
+            userCountry={userCountry}
             onLogout={() => setUser(null)}
             onSelectTeam={(teamCode) => setSelectedTeam(teamCode)}
           />
@@ -206,15 +285,19 @@ export default function App() {
     }
   };
 
-  // If user is not authenticated, render Login Screen
   if (!user && !showSplash) {
     return <Login onLoginSuccess={(u) => setUser(u)} />;
+  }
+
+  // If user is authenticated but hasn't picked a country yet
+  if (user && !userCountry && !showSplash) {
+    return <CountrySelector onSelect={(code) => setUserCountry(code)} />;
   }
 
   return (
     <>
       {showSplash && <SplashScreen onComplete={handleSplashComplete} />}
-      {!showSplash && (
+      {!showSplash && userCountry && (
         <div className="mobile-container">
           
           {/* Scrollable Main Area */}
@@ -270,6 +353,7 @@ export default function App() {
         <StickerScanner
           stickerStates={stickerStates}
           onTogglePasted={handleTogglePasted}
+          onSetStickerStatus={handleSetStickerStatus}
           onAdjustDuplicates={handleAdjustDuplicates}
           onClose={() => setShowScanner(false)}
         />
