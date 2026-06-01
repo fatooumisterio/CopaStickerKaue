@@ -47,7 +47,7 @@ export default function App() {
     async function fetchUserData() {
       if (user && user.provider !== 'guest' && user.email) {
         try {
-          const docRef = doc(db, 'users', user.email);
+          const docRef = doc(db, 'users', user.email.toLowerCase());
           const docSnap = await getDoc(docRef);
           if (docSnap.exists()) {
             const data = docSnap.data();
@@ -68,9 +68,9 @@ export default function App() {
     const timer = setTimeout(async () => {
       if (user && user.provider !== 'guest' && user.email) {
         try {
-          const docRef = doc(db, 'users', user.email);
+          const docRef = doc(db, 'users', user.email.toLowerCase());
           await setDoc(docRef, {
-            email: user.email,
+            email: user.email.toLowerCase(),
             name: user.name,
             avatar: user.avatar,
             stickers: stickerStates,
