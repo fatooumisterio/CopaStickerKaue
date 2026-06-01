@@ -1,5 +1,6 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GoogleAuthProvider, OAuthProvider, signOut } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
 // Configurações do Firebase. Você pode preenchê-las criando um arquivo .env na raiz do projeto
 // ou configurando as variáveis de ambiente diretamente nas configurações de build do Netlify!
@@ -15,6 +16,7 @@ const firebaseConfig = {
 // Inicializar o app Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
+export const db = getFirestore(app);
 
 // Configurar Provedor Google
 const googleProvider = new GoogleAuthProvider();

@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Home, BookOpen, Camera, Copy, Trophy } from 'lucide-react';
+import { Home, BookOpen, Camera, Copy, Users } from 'lucide-react';
 import Dashboard from './components/Dashboard';
 import AlbumView from './components/AlbumView';
 import TeamPage from './components/TeamPage';
 import StickerScanner from './components/StickerScanner';
 import TradeManager from './components/TradeManager';
+import FriendsPage from './components/FriendsPage';
 import Login from './components/Login';
 import { TOTAL_STICKERS } from './data/copaData';
+import { db } from './services/firebase';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState('home'); // 'home' | 'album' | 'trades'
@@ -38,6 +41,48 @@ export default function App() {
       localStorage.removeItem('copa_user');
     }
   }, [user]);
+
+  // Firestore: Fetch data when user logs in
+  useEffect(() => {
+    async function fetchUserData() {
+      if (user && user.provider !== 'guest' && user.email) {
+        try {
+          const docRef = doc(db, 'users', user.email);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            const data = docSnap.data();
+            if (data.stickers) {
+              setStickerStates(data.stickers);
+            }
+          }
+        } catch (error) {
+          console.error("Erro ao buscar dados do usuário:", error);
+        }
+      }
+    }
+    fetchUserData();
+  }, [user]);
+
+  // Firestore: Save data when stickerStates changes (debounced to avoid too many writes)
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (user && user.provider !== 'guest' && user.email) {
+        try {
+          const docRef = doc(db, 'users', user.email);
+          await setDoc(docRef, {
+            email: user.email,
+            name: user.name,
+            avatar: user.avatar,
+            stickers: stickerStates,
+            updatedAt: serverTimestamp()
+          }, { merge: true });
+        } catch (error) {
+          console.error("Erro ao salvar no Firestore:", error);
+        }
+      }
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, [stickerStates, user]);
 
   // Aggregate stats helper
   const getStats = () => {
@@ -137,6 +182,8 @@ export default function App() {
             onClearAllDuplicates={handleClearAllDuplicates}
           />
         );
+      case 'friends':
+        return <FriendsPage currentUser={user} />;
       default:
         return (
           <Dashboard
@@ -181,7 +228,6 @@ export default function App() {
           <span>Álbum</span>
         </button>
 
-        {/* Central Camera Floating Action Button (FAB) */}
         <button
           onClick={() => setShowScanner(true)}
           className="tab-btn-scan"
@@ -196,6 +242,14 @@ export default function App() {
         >
           <Copy size={22} />
           <span>Trocas</span>
+        </button>
+
+        <button
+          onClick={() => { setSelectedTeam(null); setCurrentTab('friends'); }}
+          className={`tab-btn ${currentTab === 'friends' && !selectedTeam ? 'active' : ''}`}
+        >
+          <Users size={22} />
+          <span>Amigos</span>
         </button>
       </nav>
 
