@@ -16,7 +16,7 @@ const firebaseConfig = {
 // Inicializar o app Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app);
+export const db = getFirestore(app, "copa-sticker");
 
 // Configurar Provedor Google
 const googleProvider = new GoogleAuthProvider();
