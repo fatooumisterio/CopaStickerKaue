@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Trophy, CheckCircle2, Circle, Copy, Share2, Sparkles } from 'lucide-react';
 import { TOTAL_STICKERS, teams } from '../data/copaData';
 
 export default function Dashboard({ stats, stickerStates, user, onLogout, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
+  const [userCountry, setUserCountry] = useState(null);
+
+  useEffect(() => {
+    if (user) {
+      fetch('https://api.country.is/')
+        .then(res => res.json())
+        .then(data => {
+          if (data && data.country) {
+            setUserCountry(data.country.toLowerCase());
+          }
+        })
+        .catch(err => console.error("Erro ao buscar região do IP:", err));
+    }
+  }, [user]);
+
   const percentComplete = ((stats.pasted / TOTAL_STICKERS) * 100).toFixed(1);
   const numericPercent = parseFloat(percentComplete);
 
@@ -39,10 +54,18 @@ export default function Dashboard({ stats, stickerStates, user, onLogout, onSele
           padding: '12px 16px', 
           borderRadius: '14px', 
           border: '1px solid rgba(255, 90, 0, 0.15)',
-          background: 'rgba(255, 255, 255, 0.95)',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.03)'
+          background: 'var(--bg-secondary)',
+          backgroundImage: userCountry ? `linear-gradient(to right, rgba(10, 10, 12, 0.8) 0%, rgba(10, 10, 12, 0.6) 50%, rgba(10, 10, 12, 0) 100%), url(https://flagcdn.com/w320/${userCountry}.png)` : 'none',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center right',
+          boxShadow: '0 4px 15px rgba(0,0,0,0.03)',
+          position: 'relative',
+          overflow: 'hidden'
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {/* Sombra extra para garantir leitura caso o gradient não seja suficiente */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.1) 100%)', zIndex: 0, pointerEvents: 'none' }}></div>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', position: 'relative', zIndex: 1 }}>
             {user.avatar.length > 2 ? (
               <img 
                 src={user.avatar} 
@@ -81,8 +104,8 @@ export default function Dashboard({ stats, stickerStates, user, onLogout, onSele
           <button 
             onClick={onLogout}
             style={{ 
-              border: 'none', 
-              background: 'none', 
+              border: '1px solid rgba(255, 255, 255, 0.1)', 
+              background: 'rgba(0, 0, 0, 0.3)', 
               color: '#e03e1a', 
               fontSize: '12px', 
               fontWeight: 800, 
@@ -92,7 +115,9 @@ export default function Dashboard({ stats, stickerStates, user, onLogout, onSele
               gap: '4px',
               padding: '6px 10px',
               borderRadius: '8px',
-              background: 'rgba(255, 90, 0, 0.05)'
+              backdropFilter: 'blur(5px)',
+              position: 'relative',
+              zIndex: 1
             }}
           >
             Sair
