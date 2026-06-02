@@ -162,6 +162,17 @@ export default function App() {
               if (data.country) {
                 setUserCountry(data.country);
               }
+            } else {
+              // Salvar a conta imediatamente após o primeiro login
+              await setDoc(docRef, {
+                email: user.email.toLowerCase(),
+                name: user.name,
+                avatar: user.avatar,
+                stickers: stickerStates,
+                country: userCountry,
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
+              });
             }
           } catch (error) {
             console.error("Erro ao buscar dados do usuário:", error);

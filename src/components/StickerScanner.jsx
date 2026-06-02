@@ -382,7 +382,7 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <div style={{ width: '8px', height: '8px', background: scannerActive ? '#00e676' : '#ff3d00', borderRadius: '50%', boxShadow: '0 0 8px currentColor' }}></div>
           <span style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px', color: '#fff' }}>
-            {scanMode === 'sticker' ? 'Modo Figurinha' : 'Modo Página'}
+            Scanner de Figurinha
           </span>
         </div>
         
@@ -396,33 +396,7 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
         </div>
       </div>
 
-      {/* Mode Switcher */}
-      <div style={{
-        position: 'absolute', top: '70px', left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', gap: '8px', background: 'rgba(0,0,0,0.5)', padding: '6px',
-        borderRadius: '20px', zIndex: 510
-      }}>
-        <button
-          onClick={() => { setScanMode('sticker'); setScannerActive(true); setPageReview(null); setScannedSticker(null); }}
-          style={{
-            background: scanMode === 'sticker' ? 'var(--color-blue)' : 'transparent',
-            color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '14px',
-            fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: '0.2s'
-          }}
-        >
-          <Maximize size={16} /> Figurinha
-        </button>
-        <button
-          onClick={() => { setScanMode('page'); setScannerActive(true); setPageReview(null); setScannedSticker(null); }}
-          style={{
-            background: scanMode === 'page' ? 'var(--color-blue)' : 'transparent',
-            color: '#fff', border: 'none', padding: '8px 16px', borderRadius: '14px',
-            fontSize: '12px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px', cursor: 'pointer', transition: '0.2s'
-          }}
-        >
-          <FileText size={16} /> Página
-        </button>
-      </div>
+      {/* Mode Switcher removido */}
 
       {/* Viewport */}
       <div style={{ flex: 1, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#05050a' }}>
