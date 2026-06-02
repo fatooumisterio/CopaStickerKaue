@@ -169,10 +169,30 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
       let missingCount = 0;
       const missingNumbers = new Set();
       
+      const teamStickers = detectedTeam ? getStickersForTeam(detectedTeam) : [];
+
       for (let i = 1; i <= 20; i++) {
-        // Look for the standalone number using word boundaries on clean text
         const numRegex = new RegExp(`\\b${i}\\b`);
+        
+        let foundMissing = false;
+        
         if (numRegex.test(cleanText)) {
+          foundMissing = true;
+        } else if (teamStickers.length > 0) {
+          // Fallback: verificar nome impresso na página vazia
+          const sticker = teamStickers.find(s => s.number === i);
+          if (sticker && sticker.name) {
+            const nameParts = sticker.name.toUpperCase().split(/\s+/).filter(p => p.length > 4 && p !== 'SILVA' && p !== 'SANTOS');
+            for (const part of nameParts) {
+              if (new RegExp(`\\b${part}\\b`).test(cleanText)) {
+                foundMissing = true;
+                break;
+              }
+            }
+          }
+        }
+
+        if (foundMissing) {
           missingNumbers.add(i.toString());
           missingCount++;
         }
