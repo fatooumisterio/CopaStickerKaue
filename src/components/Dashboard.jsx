@@ -46,30 +46,54 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
     
     // Oficial FIFA 2026 Schedule Mapeamento (Fase de Grupos)
     const officialSchedule = {
-      A: { dates: ['11/06/2026', '18/06/2026', '24/06/2026'], venues: ['Estadio Azteca, MEX', 'Estadio Akron, MEX', 'Estadio Azteca, MEX'] },
-      B: { dates: ['12/06/2026', '18/06/2026', '24/06/2026'], venues: ['BMO Field, CAN', 'BC Place, CAN', 'BC Place, CAN'] },
-      C: { dates: ['13/06/2026', '19/06/2026', '24/06/2026'], venues: ['Gillette Stadium, USA', 'MetLife Stadium, USA', 'Hard Rock Stadium, USA'] },
-      D: { dates: ['12/06/2026', '19/06/2026', '25/06/2026'], venues: ['SoFi Stadium, USA', 'Lumen Field, USA', 'SoFi Stadium, USA'] },
-      E: { dates: ['13/06/2026', '20/06/2026', '25/06/2026'], venues: ['Arrowhead, USA', 'NRG Stadium, USA', 'Arrowhead, USA'] },
-      F: { dates: ['14/06/2026', '20/06/2026', '26/06/2026'], venues: ['AT&T Stadium, USA', 'Estadio BBVA, MEX', 'AT&T Stadium, USA'] },
-      G: { dates: ['14/06/2026', '21/06/2026', '26/06/2026'], venues: ['SoFi Stadium, USA', 'Levi\'s Stadium, USA', 'SoFi Stadium, USA'] },
-      H: { dates: ['15/06/2026', '21/06/2026', '27/06/2026'], venues: ['Mercedes-Benz, USA', 'Hard Rock, USA', 'Mercedes-Benz, USA'] },
-      I: { dates: ['15/06/2026', '22/06/2026', '27/06/2026'], venues: ['MetLife Stadium, USA', 'Gillette Stadium, USA', 'MetLife Stadium, USA'] },
-      J: { dates: ['16/06/2026', '22/06/2026', '27/06/2026'], venues: ['Lincoln Financial, USA', 'AT&T Stadium, USA', 'Lincoln Financial, USA'] },
-      K: { dates: ['16/06/2026', '23/06/2026', '27/06/2026'], venues: ['NRG Stadium, USA', 'Arrowhead, USA', 'NRG Stadium, USA'] },
-      L: { dates: ['17/06/2026', '23/06/2026', '27/06/2026'], venues: ['BC Place, CAN', 'Lumen Field, USA', 'BC Place, CAN'] }
+      A: { dates: ['11/06/2026', '18/06/2026', '24/06/2026'], venues: ['Estadio Azteca, MEX', 'Estadio Akron, MEX', 'Estadio Azteca, MEX'], utc: ['20:00', '22:00', '21:00'] },
+      B: { dates: ['12/06/2026', '18/06/2026', '24/06/2026'], venues: ['BMO Field, CAN', 'BC Place, CAN', 'BC Place, CAN'], utc: ['19:00', '21:30', '20:00'] },
+      C: { dates: ['13/06/2026', '19/06/2026', '24/06/2026'], venues: ['Gillette Stadium, USA', 'MetLife Stadium, USA', 'Hard Rock Stadium, USA'], utc: ['18:00', '23:30', '19:00'] }, // 23:30 UTC = 20:30 Brasilia
+      D: { dates: ['12/06/2026', '19/06/2026', '25/06/2026'], venues: ['SoFi Stadium, USA', 'Lumen Field, USA', 'SoFi Stadium, USA'], utc: ['22:00', '20:30', '21:00'] },
+      E: { dates: ['13/06/2026', '20/06/2026', '25/06/2026'], venues: ['Arrowhead, USA', 'NRG Stadium, USA', 'Arrowhead, USA'], utc: ['17:00', '23:00', '19:00'] },
+      F: { dates: ['14/06/2026', '20/06/2026', '26/06/2026'], venues: ['AT&T Stadium, USA', 'Estadio BBVA, MEX', 'AT&T Stadium, USA'], utc: ['19:00', '21:00', '20:00'] },
+      G: { dates: ['14/06/2026', '21/06/2026', '26/06/2026'], venues: ['SoFi Stadium, USA', 'Levi\'s Stadium, USA', 'SoFi Stadium, USA'], utc: ['23:00', '22:00', '21:30'] },
+      H: { dates: ['15/06/2026', '21/06/2026', '27/06/2026'], venues: ['Mercedes-Benz, USA', 'Hard Rock, USA', 'Mercedes-Benz, USA'], utc: ['18:00', '20:00', '19:30'] },
+      I: { dates: ['15/06/2026', '22/06/2026', '27/06/2026'], venues: ['MetLife Stadium, USA', 'Gillette Stadium, USA', 'MetLife Stadium, USA'], utc: ['17:30', '19:00', '20:00'] },
+      J: { dates: ['16/06/2026', '22/06/2026', '27/06/2026'], venues: ['Lincoln Financial, USA', 'AT&T Stadium, USA', 'Lincoln Financial, USA'], utc: ['18:00', '21:00', '19:00'] },
+      K: { dates: ['16/06/2026', '23/06/2026', '27/06/2026'], venues: ['NRG Stadium, USA', 'Arrowhead, USA', 'NRG Stadium, USA'], utc: ['17:00', '20:30', '19:00'] },
+      L: { dates: ['17/06/2026', '23/06/2026', '27/06/2026'], venues: ['BC Place, CAN', 'Lumen Field, USA', 'BC Place, CAN'], utc: ['22:00', '19:30', '21:00'] }
     };
 
-    const schedule = officialSchedule[userGroupKey] || { dates: ['15/06/2026', '19/06/2026', '23/06/2026'], venues: ['TBA', 'TBA', 'TBA'] };
-    const matchTimes = ['16:00', '13:00', '20:00'];
+    const schedule = officialSchedule[userGroupKey] || { dates: ['15/06/2026', '19/06/2026', '23/06/2026'], venues: ['TBA', 'TBA', 'TBA'], utc: ['19:00', '16:00', '23:00'] };
     
-    return opponents.map((opp, index) => ({
-      opponent: opp,
-      date: schedule.dates[index],
-      venue: schedule.venues[index],
-      time: matchTimes[index],
-      isHome: index % 2 === 0
-    }));
+    // Obter fuso horário do país (fallback para hora local do dispositivo)
+    const teamTimezone = teams[userCountry].timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+    return opponents.map((opp, index) => {
+      // Criar objeto Date baseado no UTC (assumindo que a data do jogo é a do array convertida para formato válido)
+      const [day, month, year] = schedule.dates[index].split('/');
+      const [hour, minute] = schedule.utc[index].split(':');
+      
+      // Cria uma string ISO válida em UTC
+      const dateUtc = new Date(`${year}-${month}-${day}T${hour}:${minute}:00Z`);
+      
+      // Formata a hora para o fuso horário da seleção
+      let localTimeString = '';
+      try {
+        localTimeString = new Intl.DateTimeFormat('pt-BR', {
+          timeZone: teamTimezone,
+          hour: '2-digit',
+          minute: '2-digit'
+        }).format(dateUtc);
+      } catch(e) {
+        // Fallback caso dê erro no timezone IANA
+        localTimeString = `${hour}:${minute}`;
+      }
+
+      return {
+        opponent: opp,
+        date: schedule.dates[index],
+        venue: schedule.venues[index],
+        time: localTimeString,
+        isHome: index % 2 === 0
+      };
+    });
   };
 
   const userMatches = getUserMatches();

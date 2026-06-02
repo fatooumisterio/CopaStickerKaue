@@ -6,6 +6,7 @@ import Tesseract from 'tesseract.js';
 export default function StickerScanner({ stickerStates, onTogglePasted, onSetStickerStatus, onAdjustDuplicates, onClose }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const streamRef = useRef(null);
   const [stream, setStream] = useState(null);
   const [cameraError, setCameraError] = useState(false);
   const [flashlight, setFlashlight] = useState(false);
@@ -137,15 +138,22 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
     try {
       setOcrProcessing(true);
       
+      // 1. Otimização de Performance (Reduzir resolução para o OCR)
+      const MAX_WIDTH = 800;
+      const scale = Math.min(1, MAX_WIDTH / video.videoWidth);
+      const targetWidth = video.videoWidth * scale;
+      const targetHeight = video.videoHeight * scale;
+
       const fullCanvas = document.createElement('canvas');
-      fullCanvas.width = video.videoWidth;
-      fullCanvas.height = video.videoHeight;
+      fullCanvas.width = targetWidth;
+      fullCanvas.height = targetHeight;
       const ctx = fullCanvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, fullCanvas.width, fullCanvas.height);
+      ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
       
       const result = await Tesseract.recognize(fullCanvas, 'eng');
       const text = result.data.text || '';
       const ocrUpper = text.toUpperCase();
+      const cleanText = ocrUpper.replace(/[^A-Z0-9]/g, ' ');
 
       // Identificar a equipe
       let detectedTeam = null;
@@ -157,20 +165,38 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
         }
       }
 
+      // Detectar os números de 1 a 20 visíveis
+      let missingCount = 0;
+      const missingNumbers = new Set();
+      
+      for (let i = 1; i <= 20; i++) {
+        // Look for the standalone number using word boundaries on clean text
+        const numRegex = new RegExp(`\\b${i}\\b`);
+        if (numRegex.test(cleanText)) {
+          missingNumbers.add(i.toString());
+          missingCount++;
+        }
+      }
+
+      // Validação de Falso Positivo: Se não achou time e achou menos de 2 números, não é página de álbum
+      if (!detectedTeam && missingCount < 2) {
+        alert("Página de álbum não reconhecida. Certifique-se de focar em uma página inteira e com boa iluminação.");
+        setOcrProcessing(false);
+        return;
+      }
+
       if (!detectedTeam) {
-        // Não foi possível identificar com clareza, usaremos um padrão e o usuário ajusta no modal
+        // Fallback apenas se tivermos certeza que é um album (baseado nos números encontrados)
         detectedTeam = 'BRA';
       }
 
-      // Identificar números faltando (visíveis)
+      // Identificar status (Faltantes x Coladas)
       const newStatuses = {};
       for (let i = 1; i <= 20; i++) {
-        // Look for the standalone number in the text
-        const numRegex = new RegExp(`\\b${i}\\b`);
-        if (numRegex.test(text)) {
-          newStatuses[i.toString()] = 'missing'; // Número está visível, figurinha falta
+        if (missingNumbers.has(i.toString())) {
+          newStatuses[i.toString()] = 'missing'; // Número visível -> figurinha falta
         } else {
-          newStatuses[i.toString()] = 'pasted'; // Número coberto, assumimos que está colada
+          newStatuses[i.toString()] = 'pasted'; // Número invisível -> figurinha colada
         }
       }
 
@@ -201,13 +227,14 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
   const startCamera = async () => {
     setCameraError(false);
     try {
-      if (stream) {
+      if (streamRef.current || stream) {
         stopCamera();
       }
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
       });
+      streamRef.current = mediaStream;
       setStream(mediaStream);
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
@@ -219,17 +246,16 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
   };
 
   const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
       tracks.forEach(track => track.stop());
       videoRef.current.srcObject = null;
     }
-    setStream(currentStream => {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-      }
-      return null;
-    });
+    setStream(null);
   };
 
   const handleToggleFlashlight = async () => {
