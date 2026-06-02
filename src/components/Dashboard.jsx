@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, CheckCircle2, Circle, Copy, Share2, Sparkles } from 'lucide-react';
-import { TOTAL_STICKERS, teams } from '../data/copaData';
+import { Trophy, CheckCircle2, Circle, Copy, Share2, Sparkles, Calendar } from 'lucide-react';
+import { TOTAL_STICKERS, teams, groups } from '../data/copaData';
 
 export default function Dashboard({ stats, stickerStates, user, userCountry, onChangeCountry, onLogout, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
   const percentComplete = ((stats.pasted / TOTAL_STICKERS) * 100).toFixed(1);
@@ -26,6 +26,53 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
   const sortedTeamCodes = Object.keys(teams).sort((a, b) =>
     teams[a].name.localeCompare(teams[b].name, 'pt-BR')
   );
+
+  // Helper to generate a fake match schedule based on the group
+  const getUserMatches = () => {
+    if (!userCountry || !teams[userCountry]) return [];
+    
+    // Encontrar o grupo do usuário
+    let userGroupKey = null;
+    Object.keys(groups).forEach(key => {
+      if (groups[key].teams && groups[key].teams.includes(userCountry)) {
+        userGroupKey = key;
+      }
+    });
+
+    if (!userGroupKey) return [];
+    
+    const groupTeams = groups[userGroupKey].teams;
+    const opponents = groupTeams.filter(t => t !== userCountry);
+    
+    // Oficial FIFA 2026 Schedule Mapeamento (Fase de Grupos)
+    const officialSchedule = {
+      A: { dates: ['11/06/2026', '18/06/2026', '24/06/2026'], venues: ['Estadio Azteca, MEX', 'Estadio Akron, MEX', 'Estadio Azteca, MEX'] },
+      B: { dates: ['12/06/2026', '18/06/2026', '24/06/2026'], venues: ['BMO Field, CAN', 'BC Place, CAN', 'BC Place, CAN'] },
+      C: { dates: ['13/06/2026', '19/06/2026', '24/06/2026'], venues: ['Gillette Stadium, USA', 'MetLife Stadium, USA', 'Hard Rock Stadium, USA'] },
+      D: { dates: ['12/06/2026', '19/06/2026', '25/06/2026'], venues: ['SoFi Stadium, USA', 'Lumen Field, USA', 'SoFi Stadium, USA'] },
+      E: { dates: ['13/06/2026', '20/06/2026', '25/06/2026'], venues: ['Arrowhead, USA', 'NRG Stadium, USA', 'Arrowhead, USA'] },
+      F: { dates: ['14/06/2026', '20/06/2026', '26/06/2026'], venues: ['AT&T Stadium, USA', 'Estadio BBVA, MEX', 'AT&T Stadium, USA'] },
+      G: { dates: ['14/06/2026', '21/06/2026', '26/06/2026'], venues: ['SoFi Stadium, USA', 'Levi\'s Stadium, USA', 'SoFi Stadium, USA'] },
+      H: { dates: ['15/06/2026', '21/06/2026', '27/06/2026'], venues: ['Mercedes-Benz, USA', 'Hard Rock, USA', 'Mercedes-Benz, USA'] },
+      I: { dates: ['15/06/2026', '22/06/2026', '27/06/2026'], venues: ['MetLife Stadium, USA', 'Gillette Stadium, USA', 'MetLife Stadium, USA'] },
+      J: { dates: ['16/06/2026', '22/06/2026', '27/06/2026'], venues: ['Lincoln Financial, USA', 'AT&T Stadium, USA', 'Lincoln Financial, USA'] },
+      K: { dates: ['16/06/2026', '23/06/2026', '27/06/2026'], venues: ['NRG Stadium, USA', 'Arrowhead, USA', 'NRG Stadium, USA'] },
+      L: { dates: ['17/06/2026', '23/06/2026', '27/06/2026'], venues: ['BC Place, CAN', 'Lumen Field, USA', 'BC Place, CAN'] }
+    };
+
+    const schedule = officialSchedule[userGroupKey] || { dates: ['15/06/2026', '19/06/2026', '23/06/2026'], venues: ['TBA', 'TBA', 'TBA'] };
+    const matchTimes = ['16:00', '13:00', '20:00'];
+    
+    return opponents.map((opp, index) => ({
+      opponent: opp,
+      date: schedule.dates[index],
+      venue: schedule.venues[index],
+      time: matchTimes[index],
+      isHome: index % 2 === 0
+    }));
+  };
+
+  const userMatches = getUserMatches();
 
   return (
     <div className="dashboard-container" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -372,6 +419,50 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
         </div>
         <Share2 size={16} style={{ color: 'var(--text-muted)' }} />
       </div>
+
+      {/* MATCH SCHEDULE CALENDAR */}
+      {userMatches.length > 0 && (
+        <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: `4px solid ${teams[userCountry].color}` }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+            <Calendar size={18} style={{ color: 'var(--color-teal)' }} />
+            <h3 style={{ fontSize: '15px', fontWeight: 800 }}>Jogos na Fase de Grupos</h3>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            {userMatches.map((match, i) => {
+              const opp = teams[match.opponent];
+              const homeTeam = match.isHome ? teams[userCountry] : opp;
+              const awayTeam = match.isHome ? opp : teams[userCountry];
+              return (
+                <div key={i} style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  justifyContent: 'space-between',
+                  background: 'rgba(255,255,255,0.02)',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  border: '1px solid rgba(255,255,255,0.05)'
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'flex-end' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 800, textAlign: 'right' }}>{homeTeam.name}</span>
+                    <span style={{ fontSize: '20px' }}>{homeTeam.flag}</span>
+                  </div>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 8px', minWidth: '90px' }}>
+                    <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: 700, textAlign: 'center', marginBottom: '4px', lineHeight: '1.1' }}>{match.venue}</span>
+                    <span style={{ fontSize: '10px', color: '#fff', fontWeight: 700 }}>{match.date}</span>
+                    <span style={{ fontSize: '13px', color: 'var(--accent-gold)', fontWeight: 900 }}>{match.time}</span>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'flex-start' }}>
+                    <span style={{ fontSize: '20px' }}>{awayTeam.flag}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 800 }}>{awayTeam.name}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Bottom navigate to Album */}
       <button className="glass glass-interactive" style={{ background: 'var(--accent-2026-gradient)', color: '#000', border: 'none', padding: '16px', borderRadius: '14px', fontSize: '16px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }} onClick={onNavigateToAlbum}>

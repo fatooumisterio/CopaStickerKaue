@@ -45,6 +45,7 @@ export default function App() {
     if (userCountry && teams[userCountry]) {
       localStorage.setItem('copa_user_country', userCountry);
       const originalColor = teams[userCountry].color;
+      const originalColor2 = teams[userCountry].color2 || originalColor;
       
       // Helper para clarear cor e verificar se é muito escura
       const processThemeColor = (hex) => {
@@ -74,21 +75,22 @@ export default function App() {
         };
       };
 
-      const { color: lightColor, isDark } = processThemeColor(originalColor);
+      const { color: lightColor1, isDark: isDark1 } = processThemeColor(originalColor);
+      const { color: lightColor2 } = processThemeColor(originalColor2);
       const root = document.documentElement;
       
-      // Override main theme colors with the lightened country color
-      root.style.setProperty('--color-teal', lightColor);
-      root.style.setProperty('--color-orange', lightColor);
-      root.style.setProperty('--color-blue', lightColor);
+      // Override main theme colors with the lightened country colors
+      root.style.setProperty('--color-teal', lightColor1);
+      root.style.setProperty('--color-orange', lightColor2);
+      root.style.setProperty('--color-blue', lightColor1);
       
-      // Create a nice gradient
-      root.style.setProperty('--accent-2026-gradient', `linear-gradient(135deg, ${lightColor} 0%, rgba(255,255,255,0.4) 100%)`);
-      root.style.setProperty('--glow-teal', `0 4px 15px ${lightColor}60`);
-      root.style.setProperty('--glow-orange', `0 4px 15px ${lightColor}60`);
+      // Create a nice gradient using both predominant colors
+      root.style.setProperty('--accent-2026-gradient', `linear-gradient(135deg, ${lightColor1} 0%, ${lightColor2} 100%)`);
+      root.style.setProperty('--glow-teal', `0 4px 15px ${lightColor1}60`);
+      root.style.setProperty('--glow-orange', `0 4px 15px ${lightColor2}60`);
 
-      // Se a cor for muito escura (preto ou próximo), adicionar contorno branco
-      if (isDark) {
+      // Se a cor primária for muito escura (preto ou próximo), adicionar contorno branco
+      if (isDark1) {
         root.style.setProperty('--theme-stroke', '1px rgba(255,255,255,0.8)');
         root.style.setProperty('--theme-icon-shadow', 'drop-shadow(0 0 2px rgba(255,255,255,0.9))');
       } else {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Plus, Minus, Check, Copy } from 'lucide-react';
 import { teams, getStickersForTeam } from '../data/copaData';
+import StickerImage from './StickerImage';
 
 const flagMap = {
   MEX: 'mx', RSA: 'za', KOR: 'kr', CZE: 'cz',
@@ -175,51 +176,12 @@ export default function TeamPage({ teamCode, stickerStates, onTogglePasted, onAd
 
               {/* Middle Row: Photo, Name & Role */}
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', margin: '6px 0', gap: '8px' }}>
-                {sticker.type === 'player' && (
-                  <div style={{
-                    width: '56px',
-                    height: '56px',
-                    borderRadius: '50%',
-                    border: isPasted ? `2px solid ${team.color}` : '2px dashed var(--border-glass)',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: isPasted ? 'transparent' : 'rgba(0,0,0,0.1)',
-                    opacity: isPasted ? 1 : 0.4,
-                    filter: isPasted ? 'none' : 'grayscale(100%)',
-                    transition: 'all 0.3s ease'
-                  }}>
-                    <img 
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(sticker.name)}&background=random&color=fff&size=128&bold=true`} 
-                      alt={sticker.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  </div>
-                )}
-                
-                {sticker.type === 'special' && (
-                   <div style={{
-                    width: '56px',
-                    height: '56px',
-                    borderRadius: '8px',
-                    border: isPasted ? `2px solid ${team.color}` : '2px dashed var(--border-glass)',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: isPasted ? 'transparent' : 'rgba(0,0,0,0.1)',
-                    opacity: isPasted ? 1 : 0.4,
-                    filter: isPasted ? 'none' : 'grayscale(100%)',
-                    transition: 'all 0.3s ease'
-                  }}>
-                    <img 
-                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(sticker.name)}&background=ffd700&color=000&size=128&bold=true`} 
-                      alt={sticker.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
-                  </div>
-                )}
+                <StickerImage 
+                  playerName={sticker.name} 
+                  teamColor={team.color} 
+                  isPasted={isPasted} 
+                  isSpecial={isSpecial} 
+                />
 
                 <div style={{ textAlign: 'center' }}>
                   <h4 style={{

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Camera, X, Bolt, Keyboard, Sparkles, Check, Plus, AlertCircle, Loader2, Maximize, FileText, CheckSquare, Square } from 'lucide-react';
+import { Camera, X, Bolt, Keyboard, Sparkles, Check, Plus, AlertCircle, Loader2, Maximize, FileText, CheckSquare, Square, CheckCircle } from 'lucide-react';
 import { teams, getStickersForTeam } from '../data/copaData';
 import Tesseract from 'tesseract.js';
 
@@ -97,7 +97,7 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
                   }
                   const nameParts = normalizedName.split(/\s+/).filter(part => part.length > 3 && part !== 'SILVA' && part !== 'SANTOS');
                   for (const part of nameParts) {
-                    if (ocrUpper.includes(part)) {
+                    if (new RegExp(`\\b${part}\\b`).test(cleanText)) {
                       bestMatch = { teamCode: tCode, number: sticker.number.toString() };
                       break;
                     }
@@ -158,9 +158,8 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
       }
 
       if (!detectedTeam) {
-        alert("Não foi possível identificar a seleção nesta página. Certifique-se de que a sigla ou nome (ex: BRA ou BRASIL) esteja legível.");
-        setOcrProcessing(false);
-        return;
+        // Não foi possível identificar com clareza, usaremos um padrão e o usuário ajusta no modal
+        detectedTeam = 'BRA';
       }
 
       // Identificar números faltando (visíveis)
@@ -220,10 +219,17 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
   };
 
   const stopCamera = () => {
-    if (stream) {
-      stream.getTracks().forEach(track => track.stop());
-      setStream(null);
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach(track => track.stop());
+      videoRef.current.srcObject = null;
     }
+    setStream(currentStream => {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+      }
+      return null;
+    });
   };
 
   const handleToggleFlashlight = async () => {
@@ -476,14 +482,22 @@ export default function StickerScanner({ stickerStates, onTogglePasted, onSetSti
         <div className="modal-overlay" style={{ zIndex: 1050 }}>
           <div className="modal-content glass" style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', borderRadius: '16px', width: '90%', maxWidth: '400px', maxHeight: '85vh', overflow: 'auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h2 style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                {teams[pageReview.teamCode].flag} Revisão da Página
-              </h2>
+              <select 
+                value={pageReview.teamCode} 
+                onChange={(e) => setPageReview({...pageReview, teamCode: e.target.value})}
+                style={{ fontSize: '18px', fontWeight: 800, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-primary)', outline: 'none', padding: '6px 12px', borderRadius: '8px' }}
+              >
+                {Object.keys(teams).map(code => (
+                  <option key={code} value={code} style={{ background: '#0a0a14' }}>
+                    {teams[code].flag} {teams[code].name}
+                  </option>
+                ))}
+              </select>
               <button onClick={() => { setPageReview(null); setScannerActive(true); }} style={{ border: 'none', background: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}><X size={20} /></button>
             </div>
             
             <p style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-              O app identificou a seleção **{teams[pageReview.teamCode].name}**. Baseado na foto, prevemos o status abaixo. Clique nas opções para corrigir se necessário antes de salvar.
+              Baseado na foto, prevemos o status abaixo. Altere a seleção acima se estiver incorreta e clique nas figurinhas para corrigir o status.
             </p>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '50vh', overflowY: 'auto', paddingRight: '4px' }}>
