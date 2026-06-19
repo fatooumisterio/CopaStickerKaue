@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Trophy, CheckCircle2, Circle, Copy, Share2, Sparkles, Calendar } from 'lucide-react';
+import { Trophy, CheckCircle2, Circle, Copy, Share2, Sparkles, Calendar, RefreshCw } from 'lucide-react';
 import { TOTAL_STICKERS, teams, groups } from '../data/copaData';
 
 export default function Dashboard({ stats, stickerStates, user, userCountry, onChangeCountry, onLogout, onSelectTeam, onNavigateToAlbum, onNavigateToTrades }) {
@@ -103,6 +103,31 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
   };
 
   const userMatches = getUserMatches();
+
+  const [matchResults, setMatchResults] = useState({});
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchMatchResults = () => {
+    setIsRefreshing(true);
+    // Simula o tempo de rede e atualiza os placares
+    setTimeout(() => {
+      const results = {};
+      userMatches.forEach(match => {
+        // Gerador de placares simulados (0 a 4 gols)
+        results[match.opponent] = {
+          home: Math.floor(Math.random() * 5),
+          away: Math.floor(Math.random() * 5)
+        };
+      });
+      setMatchResults(results);
+      setIsRefreshing(false);
+    }, 500);
+  };
+
+  useEffect(() => {
+    fetchMatchResults();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userCountry]);
 
   return (
     <div className="dashboard-container" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -453,15 +478,38 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
       {/* MATCH SCHEDULE CALENDAR */}
       {userMatches.length > 0 && (
         <div className="glass" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', borderLeft: `4px solid ${teams[userCountry].color}` }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
-            <Calendar size={18} style={{ color: 'var(--color-teal)' }} />
-            <h3 style={{ fontSize: '15px', fontWeight: 800 }}>Jogos na Fase de Grupos</h3>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-primary)' }}>
+              <Calendar size={18} style={{ color: 'var(--color-teal)' }} />
+              <h3 style={{ fontSize: '15px', fontWeight: 800 }}>Jogos na Fase de Grupos</h3>
+            </div>
+            <button 
+              onClick={fetchMatchResults} 
+              disabled={isRefreshing}
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                color: 'var(--color-teal)', 
+                cursor: 'pointer', 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: '4px',
+                fontSize: '11px',
+                fontWeight: 800,
+                padding: '4px'
+              }}
+            >
+              <RefreshCw size={14} className={isRefreshing ? 'spin-animation' : ''} />
+              {isRefreshing ? 'Atualizando...' : 'Atualizar Placar'}
+            </button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {userMatches.map((match, i) => {
               const opp = teams[match.opponent];
               const homeTeam = match.isHome ? teams[userCountry] : opp;
               const awayTeam = match.isHome ? opp : teams[userCountry];
+              const result = matchResults[match.opponent];
+              
               return (
                 <div key={i} style={{ 
                   display: 'flex', 
@@ -480,7 +528,16 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '0 8px', minWidth: '90px' }}>
                     <span style={{ fontSize: '9px', color: 'var(--text-muted)', fontWeight: 700, textAlign: 'center', marginBottom: '4px', lineHeight: '1.1' }}>{match.venue}</span>
                     <span style={{ fontSize: '10px', color: '#fff', fontWeight: 700 }}>{match.date}</span>
-                    <span style={{ fontSize: '13px', color: 'var(--accent-gold)', fontWeight: 900 }}>{match.time}</span>
+                    
+                    {result ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px', background: 'rgba(0,0,0,0.2)', padding: '4px 8px', borderRadius: '6px' }}>
+                        <span style={{ fontSize: '16px', fontWeight: 900, color: 'white' }}>{match.isHome ? result.home : result.away}</span>
+                        <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--color-orange)' }}>X</span>
+                        <span style={{ fontSize: '16px', fontWeight: 900, color: 'white' }}>{match.isHome ? result.away : result.home}</span>
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: '13px', color: 'var(--accent-gold)', fontWeight: 900 }}>{match.time}</span>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flex: 1, justifyContent: 'flex-start' }}>
@@ -507,6 +564,13 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
         .horizontal-carousel-no-scrollbar {
           -ms-overflow-style: none;  /* IE and Edge */
           scrollbar-width: none;  /* Firefox */
+        }
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .spin-animation {
+          animation: spin 1s linear infinite;
         }
       `}</style>
 
