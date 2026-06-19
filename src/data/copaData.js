@@ -165,10 +165,7 @@ export const getStickersForTeam = (teamCode) => {
     }));
   }
 
-  const stickers = [
-    { number: 1, name: `Escudo 2026 - ${team.name}`, type: 'special', role: 'Escudo Oficial' },
-    { number: 2, name: `Estádio / Team Photo - ${team.name}`, type: 'special', role: 'Especial' }
-  ];
+  const stickers = [];
 
   let playerList = officialPlayers[teamCode];
 
@@ -184,13 +181,21 @@ export const getStickersForTeam = (teamCode) => {
     'Atacante', 'Atacante', 'Atacante', 'Atacante', 'Atacante', 'Atacante'
   ];
 
-  for (let i = 0; i < 18; i++) {
-    stickers.push({
-      number: i + 3,
-      name: playerList[i],
-      type: 'player',
-      role: roles[i] || 'Jogador'
-    });
+  let playerIndex = 0;
+  for (let number = 1; number <= 20; number++) {
+    if (number === 1) {
+      stickers.push({ number: 1, name: `Escudo 2026 - ${team.name}`, type: 'special', role: 'Escudo Oficial' });
+    } else if (number === 13) {
+      stickers.push({ number: 13, name: `Estádio / Team Photo - ${team.name}`, type: 'special', role: 'Especial' });
+    } else {
+      stickers.push({
+        number: number,
+        name: playerList[playerIndex],
+        type: 'player',
+        role: roles[playerIndex] || 'Jogador'
+      });
+      playerIndex++;
+    }
   }
 
   return stickers;
