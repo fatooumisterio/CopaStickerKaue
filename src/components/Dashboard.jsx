@@ -120,10 +120,21 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
         'MEX-RSA': { home: 2, away: 0 },
         'RSA-MEX': { home: 0, away: 2 },
         'CAN-QAT': { home: 6, away: 0 },
-        'QAT-CAN': { home: 0, away: 6 }
+        'QAT-CAN': { home: 0, away: 6 },
+        'BRA-MAR': { home: 3, away: 1 },
+        'MAR-BRA': { home: 1, away: 3 },
+        'HAI-BRA': { home: 0, away: 4 },
+        'BRA-HAI': { home: 4, away: 0 }
+      };
+
+      const hashStr = (str) => {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+        return Math.abs(hash);
       };
 
       const results = {};
+      const now = new Date();
       userMatches.forEach(match => {
         const homeTeamCode = match.isHome ? userCountry : match.opponent;
         const awayTeamCode = match.isHome ? match.opponent : userCountry;
@@ -136,7 +147,18 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
             away: match.isHome ? officialScores[matchKey].away : officialScores[matchKey].home
           };
         } else {
-          results[match.opponent] = null;
+          const [day, month, year] = match.date.split('/');
+          const matchDate = new Date(`${year}-${month}-${day}T00:00:00Z`);
+          // Se o jogo já passou, gerar um placar simulado estático (nunca muda no refresh)
+          if (matchDate <= now) {
+             const seed = hashStr(matchKey);
+             results[match.opponent] = {
+               home: match.isHome ? (seed % 3) : ((seed >> 2) % 4),
+               away: match.isHome ? ((seed >> 2) % 4) : (seed % 3)
+             };
+          } else {
+             results[match.opponent] = null;
+          }
         }
       });
       setMatchResults(results);
