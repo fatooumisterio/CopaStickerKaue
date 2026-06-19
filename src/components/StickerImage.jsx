@@ -63,23 +63,25 @@ export default function StickerImage({ playerName, teamColor, isPasted, isSpecia
   if (isSpecial) {
     return (
       <div style={{
-        width: '56px',
-        height: '56px',
-        borderRadius: '8px',
+        width: '64px',
+        height: '88px',
+        borderRadius: '4px',
         border: isPasted ? `2px solid ${teamColor}` : '2px dashed var(--border-glass)',
+        padding: isPasted ? '3px' : '0',
+        background: isPasted ? '#fff' : 'rgba(0,0,0,0.1)',
         overflow: 'hidden',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: isPasted ? 'transparent' : 'rgba(0,0,0,0.1)',
         opacity: isPasted ? 1 : 0.4,
         filter: isPasted ? 'none' : 'grayscale(100%)',
-        transition: 'all 0.3s ease'
+        transition: 'all 0.3s ease',
+        boxShadow: isPasted ? '0 2px 5px rgba(0,0,0,0.2)' : 'none'
       }}>
         <img 
           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(playerName)}&background=ffd700&color=000&size=128&bold=true`} 
           alt={playerName}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: isPasted ? '2px' : '0' }}
         />
       </div>
     );
@@ -88,18 +90,20 @@ export default function StickerImage({ playerName, teamColor, isPasted, isSpecia
   // Player Stickers
   return (
     <div style={{
-      width: '56px',
-      height: '56px',
-      borderRadius: '50%',
+      width: '64px',
+      height: '88px',
+      borderRadius: '4px',
       border: isPasted ? `2px solid ${teamColor}` : '2px dashed var(--border-glass)',
+      padding: isPasted ? '3px' : '0',
+      background: isPasted ? '#fff' : 'rgba(0,0,0,0.1)',
       overflow: 'hidden',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: isPasted ? (imageUrl ? 'rgba(255,255,255,0.05)' : 'transparent') : 'rgba(0,0,0,0.1)',
       opacity: isPasted ? 1 : 0.4,
       filter: isPasted ? 'none' : 'grayscale(100%)',
-      transition: 'all 0.3s ease'
+      transition: 'all 0.3s ease',
+      boxShadow: isPasted ? '0 2px 5px rgba(0,0,0,0.2)' : 'none'
     }}>
       {loading ? (
         <div style={{ width: '20px', height: '20px', border: '2px solid var(--border-glass)', borderTopColor: teamColor, borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
@@ -107,7 +111,7 @@ export default function StickerImage({ playerName, teamColor, isPasted, isSpecia
         <img 
           src={imageUrl} 
           alt={playerName}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', background: 'transparent' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: isPasted ? '2px' : '0', background: 'transparent' }}
           onError={(e) => {
             // Fallback if image fails to load
             e.target.onerror = null;
@@ -118,7 +122,7 @@ export default function StickerImage({ playerName, teamColor, isPasted, isSpecia
         <img 
           src={`https://ui-avatars.com/api/?name=${encodeURIComponent(playerName)}&background=random&color=fff&size=128&bold=true`} 
           alt={playerName}
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: isPasted ? '2px' : '0' }}
         />
       )}
     </div>

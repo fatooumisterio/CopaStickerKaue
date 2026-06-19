@@ -109,15 +109,35 @@ export default function Dashboard({ stats, stickerStates, user, userCountry, onC
 
   const fetchMatchResults = () => {
     setIsRefreshing(true);
-    // Simula o tempo de rede e atualiza os placares
+    // Simula o tempo de rede e atualiza os placares com resultados reais
     setTimeout(() => {
+      // Banco de placares reais da Copa 2026 (atualizado até o momento)
+      const officialScores = {
+        'ENG-CRO': { home: 4, away: 2 },
+        'CRO-ENG': { home: 2, away: 4 },
+        'KOR-CZE': { home: 2, away: 1 },
+        'CZE-KOR': { home: 1, away: 2 },
+        'MEX-RSA': { home: 2, away: 0 },
+        'RSA-MEX': { home: 0, away: 2 },
+        'CAN-QAT': { home: 6, away: 0 },
+        'QAT-CAN': { home: 0, away: 6 }
+      };
+
       const results = {};
       userMatches.forEach(match => {
-        // Gerador de placares simulados (0 a 4 gols)
-        results[match.opponent] = {
-          home: Math.floor(Math.random() * 5),
-          away: Math.floor(Math.random() * 5)
-        };
+        const homeTeamCode = match.isHome ? userCountry : match.opponent;
+        const awayTeamCode = match.isHome ? match.opponent : userCountry;
+        const matchKey = `${homeTeamCode}-${awayTeamCode}`;
+        
+        if (officialScores[matchKey]) {
+          // Mantém a estrutura de home/away de acordo com a perspectiva do array original
+          results[match.opponent] = {
+            home: match.isHome ? officialScores[matchKey].home : officialScores[matchKey].away,
+            away: match.isHome ? officialScores[matchKey].away : officialScores[matchKey].home
+          };
+        } else {
+          results[match.opponent] = null;
+        }
       });
       setMatchResults(results);
       setIsRefreshing(false);
